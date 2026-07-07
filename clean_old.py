@@ -76,7 +76,7 @@ def clean_account(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Удаляет старые письма на почтовике Beget через IMAP")
     parser.add_argument("--accounts", required=True, help="Путь к JSON-файлу с массивом {email, password}")
-    parser.add_argument("--days", type=int, default=730, help="Удалить письма старше X дней (по умолчанию 730)")
+    parser.add_argument("--days", type=int, default=365, help="Удалить письма старше X дней (по умолчанию 365)")
     parser.add_argument(
         "--folders",
         default="INBOX",

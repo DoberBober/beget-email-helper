@@ -138,7 +138,7 @@ def main() -> None:
 
 
 def save_domain_emails(domain: str, emails: list[str]) -> Path:
-    results_dir = Path("results")
+    results_dir = Path("results/mails_list")
     results_dir.mkdir(parents=True, exist_ok=True)
 
     file_path = results_dir / f"{domain}.json"
