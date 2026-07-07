@@ -40,18 +40,18 @@ def clean_account(
                 readonly = dry_run
                 status, _ = imap.select(folder, readonly=readonly)
                 if status != "OK":
-                    print(f"❌ [{email}] {folder}: select failed ({status})")
+                    print(f"❌ [{email}] {folder}: ошибка выбора ({status})")
                     continue
 
                 cutoff = get_imap_date(days)
                 status, data = imap.uid("SEARCH", f'(BEFORE "{cutoff}")')
                 if status != "OK" or not data or not data[0]:
-                    print(f"❌ [{email}] {folder}: 0 old messages")
+                    print(f"❌ [{email}] {folder}: 0 старых писем")
                     continue
 
                 uids: List[bytes] = data[0].split()
                 count = len(uids)
-                print(f"📋 [{email}] {folder}: {count} messages older than {cutoff}")
+                print(f"📋 [{email}] {folder}: {count} писем старше {cutoff}")
 
                 if count == 0 or dry_run:
                     continue
@@ -63,7 +63,7 @@ def clean_account(
                     imap.uid("STORE", b",".join(chunk), "+FLAGS", r"(\Deleted)")
                 imap.expunge()
 
-                print(f"✅ [{email}] {folder}: deleted {count}")
+                print(f"✅ [{email}] {folder}: удалено {count}")
                 total_deleted += count
 
             except Exception as exc:
@@ -87,24 +87,24 @@ def main() -> None:
 
     accounts_file = Path(args.accounts)
     if not accounts_file.exists():
-        print(f"❌ Accounts file not found: {accounts_file}")
+        print(f"❌ Файл с почтовыми ящиками не найден {accounts_file}")
         return
 
     accounts: List[dict] = json.loads(accounts_file.read_text(encoding="utf-8"))
     folders = [f.strip() for f in args.folders.split(",") if f.strip()]
 
-    print(f"📋 Host: {IMAP_HOST} | Days: {args.days} | Dry-run: {args.dry_run}")
-    print(f"📋 Folders: {folders}\n")
+    print(f"📋 Хост: {IMAP_HOST} | Количество дней: {args.days} | Dry-run: {args.dry_run}")
+    print(f"📋 Папки: {folders}\n")
 
     grand_total = 0
     for acc in accounts:
         email = acc["email"]
         password = acc["password"]
-        print(f"⏳ Processing {email}...")
+        print(f"⏳ Обрабатываю {email}...")
         deleted = clean_account(email, password, args.days, folders, args.dry_run)
         grand_total += deleted
 
-    print(f"\n\nTotal deleted: {grand_total}" if not args.dry_run else "\n\nDry-run complete.")
+    print(f"\n\nВсего удалено: {grand_total}" if not args.dry_run else "\n\nDry-run complete.")
 
 
 if __name__ == "__main__":
