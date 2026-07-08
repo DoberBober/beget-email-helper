@@ -54,6 +54,7 @@ def clean_account(
                 print(f"📋 [{email}] {folder}: {count} писем старше {cutoff}")
 
                 if count == 0 or dry_run:
+                    total_deleted += count
                     continue
 
                 # Chunked STORE to avoid huge command limits.
@@ -104,7 +105,7 @@ def main() -> None:
         deleted = clean_account(email, password, args.days, folders, args.dry_run)
         grand_total += deleted
 
-    print(f"\n\nВсего удалено: {grand_total}" if not args.dry_run else "\n\nDry-run complete.")
+    print(f"\n\nВсего удалено: {grand_total}" if not args.dry_run else f"\n\nВсего писем: {grand_total}")
 
 
 if __name__ == "__main__":
